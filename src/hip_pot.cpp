@@ -107,7 +107,7 @@ void hip_pot::assignDevicePot(_type_device_pot device_pot) {
   dev_spline_ptr += n;
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_embedded_energy), &(dev_spline_ptr), spline_ptr_size));
   dev_spline_ptr += n;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_origin_table_pair), &(dev_spline_ptr), spline_ptr_size));
+  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_pair), &(dev_spline_ptr), spline_ptr_size));
 }
 
 void hip_pot::destroyDevicePotTables(_type_device_pot device_pot) {
