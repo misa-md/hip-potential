@@ -1,8 +1,10 @@
 set(TEST_HEADER_FILES
+        eam_pot_fixture.h
         )
 
 set(TEST_SOURCE_FILES
         main.cpp
+        hip_pot_test.cpp
         )
 
 # set binary path and lib storage path wile compiling process.
