@@ -1,3 +1,4 @@
+option(HIP_POT_MPI_ENABLE_FLAG "Enable MPI" ON) # enable MPI
 option(HIP_POT_TEST_BUILD_ENABLE_FLAG "Enable building tests" ON) # enable test
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
