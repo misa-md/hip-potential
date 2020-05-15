@@ -7,6 +7,9 @@ set(TEST_SOURCE_FILES
         hip_pot_test.cpp
         )
 
+set(DEVICE_TEST_LIB_NAME "hip_pot_device")
+add_subdirectory(device)
+
 # set binary path and lib storage path wile compiling process.
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
@@ -17,12 +20,12 @@ add_executable(${HIP_POT_UINT_TEST_NAME} ${TEST_SOURCE_FILES} ${TEST_HEADER_FILE
 if (TARGET GTest::gtest AND TARGET GTest::gtest_main)
     # googletest is added by `find_package(GTest)`
     target_link_libraries(${HIP_POT_UINT_TEST_NAME}
-            PRIVATE GTest::gtest GTest::gtest_main ${HIP_POT_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
+            PRIVATE GTest::gtest GTest::gtest_main ${HIP_POT_LIB_NAME} ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
             )
 else ()
     # googletest is added by `add_subdirectory`
     target_link_libraries(${HIP_POT_UINT_TEST_NAME}
-            PRIVATE gtest gtest_main ${HIP_POT_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
+            PRIVATE gtest gtest_main ${HIP_POT_LIB_NAME} ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
             )
 endif ()
 
@@ -33,7 +36,7 @@ add_test(NAME unit-test COMMAND ${HIP_POT_UINT_TEST_NAME})
 ##########################
 ##### install files
 ##########################
-install(TARGETS ${HIP_POT_UINT_TEST_NAME}
+install(TARGETS ${HIP_POT_UINT_TEST_NAME} ${DEVICE_TEST_LIB_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
