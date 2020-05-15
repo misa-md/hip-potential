@@ -11,7 +11,7 @@ endif ()
 #############
 ## const ##
 #############
-set(HIP_POT_LIB_NAME pot_hip)
+set(HIP_POT_LIB_NAME hip_pot)
 
 # test
 set(HIP_POT_UINT_TEST_NAME "hip_pot-unit-test")
