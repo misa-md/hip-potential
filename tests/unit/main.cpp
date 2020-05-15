@@ -2,9 +2,6 @@
 // Created by genshen on 2020/05/14
 //
 
-#ifndef HIP_POT_GTEST_MAIN_H
-#define HIP_POT_GTEST_MAIN_H
-
 #include <gtest/gtest.h>
 
 #  ifdef HIP_POT_TEST_MPI_ENABLE_FLAG
@@ -35,4 +32,3 @@ int main(int argc, char *argv[]) {
 #endif  // end HIP_POT_TEST_MPI_ENABLE_FLAG
     return RUN_ALL_TESTS();
 }
-#endif // HIP_POT_GTEST_MAIN_H
