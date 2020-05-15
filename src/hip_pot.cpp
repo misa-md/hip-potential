@@ -14,25 +14,29 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   // the total number of data in origin potential tables.
   _type_device_table_size orgin_data_n = 0;
   // init tables metadata
+  _type_device_table_size meta_i = 0;
   _type_device_pot_table_meta *p_tables_metadata = new _type_device_pot_table_meta[tables];
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto elec = _pot->electron_density.getEamItemByType(_pot_types[i]);
-    p_tables_metadata[i] = _type_device_pot_table_meta{
+    p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = elec->x0, .inv_dx = elec->invDx, .n = static_cast<_type_device_table_size>(elec->n)};
     orgin_data_n += elec->n;
+    meta_i++;
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto emb = _pot->embedded.getEamItemByType(_pot_types[i]);
-    p_tables_metadata[i] = _type_device_pot_table_meta{
+    p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = emb->x0, .inv_dx = emb->invDx, .n = static_cast<_type_device_table_size>(emb->n)};
     orgin_data_n += emb->n;
+    meta_i++;
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     for (_type_device_table_size j = i; j < n_eles; j++) {
       auto pair = _pot->eam_phi.getPhiByEamPhiByType(_pot_types[i], _pot_types[j]);
-      p_tables_metadata[i] = _type_device_pot_table_meta{
+      p_tables_metadata[meta_i] = _type_device_pot_table_meta{
           .x0 = pair->x0, .inv_dx = pair->invDx, .n = static_cast<_type_device_table_size>(pair->n)};
       orgin_data_n += pair->n;
+      meta_i++;
     }
   }
 
@@ -69,10 +73,10 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
     }
   }
 
-  // copy metadat array of poteential tables to device side.
+  // copy metadat array of potential tables to device side.
   _type_device_pot_table_meta *p_device_tables_metadata = nullptr;
-  HIP_CHECK(hipMalloc((void **)&p_device_tables_metadata, sizeof(_type_device_pot_table_meta *) * tables));
-  HIP_CHECK(hipMemcpy(p_device_tables_metadata, p_tables_metadata, sizeof(_type_device_pot_table_meta *) * tables,
+  HIP_CHECK(hipMalloc((void **)&p_device_tables_metadata, sizeof(_type_device_pot_table_meta) * tables));
+  HIP_CHECK(hipMemcpy(p_device_tables_metadata, p_tables_metadata, sizeof(_type_device_pot_table_meta) * tables,
                       hipMemcpyHostToDevice));
 
   // copy potential data array, whose content is also device pointers, to device side.
@@ -88,11 +92,11 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
 }
 
 void hip_pot::assignDevicePot(_type_device_pot device_pot) {
-  auto n = device_pot.n_eles;
+  _type_device_table_size n = device_pot.n_eles;
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_eam_eles), &(n), sizeof(_type_device_table_size)));
 
   _type_device_pot_table_meta *dev_meta_ptr = device_pot.ptr_device_pot_meta;
-  size_t meta_ptr_size = sizeof(_type_device_pot_table_meta *);
+  const size_t meta_ptr_size = sizeof(_type_device_pot_table_meta *);
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables_metadata), &(dev_meta_ptr), meta_ptr_size));
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_ele_charge_table_metadata), &(dev_meta_ptr), meta_ptr_size));
   dev_meta_ptr += n;
@@ -101,7 +105,7 @@ void hip_pot::assignDevicePot(_type_device_pot device_pot) {
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_pair_table_metadata), &(dev_meta_ptr), meta_ptr_size));
 
   _type_device_pot_spline **dev_spline_ptr = device_pot.ptr_device_pot_tables;
-  size_t spline_ptr_size = sizeof(_type_device_pot_spline **);
+  const size_t spline_ptr_size = sizeof(_type_device_pot_spline **);
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables), &(dev_spline_ptr), spline_ptr_size));
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_ele_charge_density), &(dev_spline_ptr), spline_ptr_size));
   dev_spline_ptr += n;
