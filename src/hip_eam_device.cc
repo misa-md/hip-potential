@@ -16,9 +16,9 @@ inline __device__ _device_spline_data findSpline(const hip_pot::_type_device_pot
                                                  const hip_pot::_type_device_pot_table_meta meta) {
   double p = value * meta.inv_dx + 1.0;
   int m = static_cast<int>(p);
-  m = max(1, std::min(m, (meta.n - 1)));
+  m = fmax(1, fmin(m, (meta.n - 1)));
   p -= m;
-  p = min(p, 1.0);
+  p = fmin(p, 1.0);
   return _device_spline_data{&(spline[m][0]), p};
 }
 
@@ -49,7 +49,7 @@ inline __device__ _device_spline_data devicePhiSplineByType(atom_type::_type_pro
   // (0,0) (0,1) (0,2) (1,1) (1,2) (2,2)
   //   0,    1,   2,    3,    4,    5
   // for (i,j) pair, we have: index = [N + (N-1) + (N-i+1)] + (j-i+1) - 1 = Ni-(i+1)*i/2+j
-  hip_pot::_type_device_table_size index = pot_eam_eles * key_from - (key_from + 1) * key_from / 2 + key_to;
+  const hip_pot::_type_device_table_size index = pot_eam_eles * key_from - (key_from + 1) * key_from / 2 + key_to;
   const hip_pot::_type_device_pot_spline *spline = pot_table_pair[index];
   const hip_pot::_type_device_pot_table_meta meta = pot_pair_table_metadata[index];
   return findSpline(v, spline, meta);
