@@ -1,4 +1,5 @@
 set(HIP_POT_DEVICE_TEST_FILES
+        eam_calc_test_device.cpp
         )
 
 set_source_files_properties(${HIP_POT_DEVICE_TEST_FILES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
