@@ -9,7 +9,7 @@
 __device__ __constant__ hip_pot::_type_device_pot_spline **pot_tables = nullptr;
 __device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_ele_charge_density = nullptr;
 __device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_spline **pot_origin_table_pair = nullptr;
+__device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_pair = nullptr;
 
 __device__ __constant__ hip_pot::_type_device_table_size pot_eam_eles = 0;
 
@@ -29,7 +29,7 @@ __global__ void _ref_device_variables() {
   pot_tables = nullptr;
   pot_table_ele_charge_density = nullptr;
   pot_table_embedded_energy = nullptr;
-  pot_origin_table_pair = nullptr;
+  pot_table_pair = nullptr;
 
   pot_tables_metadata = nullptr;
   pot_ele_charge_table_metadata = nullptr;

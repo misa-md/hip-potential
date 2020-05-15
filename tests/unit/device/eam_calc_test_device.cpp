@@ -47,3 +47,117 @@ void checkPotSplinesCopy(int ele_size, int data_size) {
   hipLaunchKernelGGL(_kernelCheckSplineCopy, dim3(16, 1), dim3(1, 1), 0, 0, ele_size, data_size);
 }
 
+__global__ void _kernelEamForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from,
+                                double *df_to, double *dist2, double *forces, size_t len) {
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int threads = hipGridDim_x * hipBlockDim_x;              // total threads
+  for (int i = id; i < len; i += threads) {
+    forces[i] = hip_pot::hipToForce(key_from[i], key_to[i], dist2[i], df_from[i], df_to[i]);
+  }
+}
+
+void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from, double *df_to,
+                 double *dist2, double *forces, size_t len) {
+  const size_t B = 512; // blocks
+  const size_t T = 128;  // threads
+
+  atom_type::_type_prop_key *deviceKeyFrom;
+  atom_type::_type_prop_key *deviceKeyTo;
+  double *deviceDfFrom;
+  double *deviceDfTo;
+  double *deviceDist2;
+  double *deviceForces; // output of kernel
+
+  HIP_CHECK(hipMalloc((void **)&deviceKeyFrom, len * sizeof(atom_type::_type_prop_key)));
+  HIP_CHECK(hipMalloc((void **)&deviceKeyTo, len * sizeof(atom_type::_type_prop_key)));
+  HIP_CHECK(hipMalloc((void **)&deviceDfFrom, len * sizeof(double)));
+  HIP_CHECK(hipMalloc((void **)&deviceDfTo, len * sizeof(double)));
+  HIP_CHECK(hipMalloc((void **)&deviceDist2, len * sizeof(double)));
+  HIP_CHECK(hipMalloc((void **)&deviceForces, len * sizeof(double)));
+
+  HIP_CHECK(hipMemcpy(deviceKeyFrom, key_from, len * sizeof(atom_type::_type_prop_key), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceKeyTo, key_to, len * sizeof(atom_type::_type_prop_key), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceDfFrom, df_from, len * sizeof(double), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceDfTo, df_to, len * sizeof(double), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceDist2, dist2, len * sizeof(double), hipMemcpyHostToDevice));
+
+  hipLaunchKernelGGL(_kernelEamForce, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeyFrom, deviceKeyTo, deviceDfFrom,
+                     deviceDfTo, deviceDist2, deviceForces, len);
+
+  HIP_CHECK(hipMemcpy(forces, deviceForces, len * sizeof(double), hipMemcpyDeviceToHost));
+
+  HIP_CHECK(hipFree(deviceKeyFrom));
+  HIP_CHECK(hipFree(deviceKeyTo));
+  HIP_CHECK(hipFree(deviceDfFrom));
+  HIP_CHECK(hipFree(deviceDfTo));
+  HIP_CHECK(hipFree(deviceDist2));
+  HIP_CHECK(hipFree(deviceForces));
+}
+
+
+__global__ void _kernelEamChargeDensity(const atom_type::_type_prop_key *keys, const double *dist2, double *rhos,
+                                        size_t len) {
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int threads = hipGridDim_x * hipBlockDim_x;              // total threads
+  for (int i = id; i < len; i += threads) {
+    rhos[i] = hip_pot::hipChargeDensity(keys[i], dist2[i]);
+  }
+}
+
+void deviceEamChargeDensity(atom_type::_type_prop_key *keys, double *dist2, double *rhos, size_t len) {
+  const size_t B = 512;
+  const size_t T = 128;
+
+  atom_type::_type_prop_key *deviceKeys;
+  double *deviceDist2;
+  double *deviceRhos; // output of kernel
+
+  HIP_CHECK(hipMalloc((void **)&deviceKeys, len * sizeof(atom_type::_type_prop_key)));
+  HIP_CHECK(hipMalloc((void **)&deviceDist2, len * sizeof(double)));
+  HIP_CHECK(hipMalloc((void **)&deviceRhos, len * sizeof(double)));
+
+  HIP_CHECK(hipMemcpy(deviceKeys, keys, len * sizeof(atom_type::_type_prop_key), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceDist2, dist2, len * sizeof(double), hipMemcpyHostToDevice));
+
+  hipLaunchKernelGGL(_kernelEamChargeDensity, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeys, deviceDist2, deviceRhos, len);
+
+  HIP_CHECK(hipMemcpy(rhos, deviceRhos, len * sizeof(double), hipMemcpyDeviceToHost));
+
+  HIP_CHECK(hipFree(deviceKeys));
+  HIP_CHECK(hipFree(deviceDist2));
+  HIP_CHECK(hipFree(deviceRhos));
+}
+
+__global__ void _kernelEamDEmbedEnergy(const atom_type::_type_prop_key *keys, const double *rhos, double *dfs,
+                                       size_t len) {
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int threads = hipGridDim_x * hipBlockDim_x;              // total threads
+  for (int i = id; i < len; i += threads) {
+    dfs[i] = hip_pot::hipDEmbedEnergy(keys[i], rhos[i]);
+  }
+}
+
+void deviceEamDEmbedEnergy(atom_type::_type_prop_key *keys, double *rhos, double *dfs, size_t len) {
+  const size_t B = 512;
+  const size_t T = 128;
+
+  atom_type::_type_prop_key *deviceKeys;
+  double *deviceRhos;
+  double *deviceDfs; // output of kernel
+
+  HIP_CHECK(hipMalloc((void **)&deviceKeys, len * sizeof(atom_type::_type_prop_key)));
+  HIP_CHECK(hipMalloc((void **)&deviceRhos, len * sizeof(double)));
+  HIP_CHECK(hipMalloc((void **)&deviceDfs, len * sizeof(double)));
+
+  HIP_CHECK(hipMemcpy(deviceKeys, keys, len * sizeof(atom_type::_type_prop_key), hipMemcpyHostToDevice));
+  HIP_CHECK(hipMemcpy(deviceRhos, rhos, len * sizeof(double), hipMemcpyHostToDevice));
+
+  hipLaunchKernelGGL(_kernelEamDEmbedEnergy, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeys, deviceRhos, deviceDfs, len);
+
+  HIP_CHECK(hipMemcpy(dfs, deviceDfs, len * sizeof(double), hipMemcpyDeviceToHost));
+
+  HIP_CHECK(hipFree(deviceKeys));
+  HIP_CHECK(hipFree(deviceRhos));
+  HIP_CHECK(hipFree(deviceDfs));
+}
+

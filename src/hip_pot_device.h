@@ -19,7 +19,7 @@
   // the similar as above, but it is for embedded energy tables.
   extern __device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy;
   // the similar as above, but it is for pair potential tables.
-  extern __device__ __constant__ hip_pot::_type_device_pot_spline **pot_origin_table_pair;
+  extern __device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_pair;
 
   // number of elements in potential
   extern __device__ __constant__ hip_pot::_type_device_table_size pot_eam_eles;
