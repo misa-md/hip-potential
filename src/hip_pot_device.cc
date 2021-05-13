@@ -6,17 +6,17 @@
 #include <hip/hip_runtime.h>
 
 // namespace hip_pot {
-__device__ __constant__ hip_pot::_type_device_pot_spline **pot_tables = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_ele_charge_density = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_spline **pot_table_pair = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_tables = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_ele_charge_density = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_pair = nullptr;
 
-__device__ __constant__ hip_pot::_type_device_table_size pot_eam_eles = 0;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_table_size pot_eam_eles = 0;
 
-__device__ __constant__ hip_pot::_type_device_pot_table_meta *pot_tables_metadata = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_table_meta *pot_ele_charge_table_metadata = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_table_meta *pot_embedded_energy_table_metadata = nullptr;
-__device__ __constant__ hip_pot::_type_device_pot_table_meta *pot_pair_table_metadata = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_tables_metadata = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_ele_charge_table_metadata = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_embedded_energy_table_metadata = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_pair_table_metadata = nullptr;
 // } // namespace hip_pot
 
 // As part of optimization,
