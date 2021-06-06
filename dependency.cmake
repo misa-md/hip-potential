@@ -1,3 +1,6 @@
+# enable C++11 support.
+set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} "-std=c++11")
+
 # check hip toolchain
 # see https://github.com/ROCm-Developer-Tools/HIP/blob/master/samples/2_Cookbook/12_cmake_hip_add_executable
 if (NOT DEFINED HIP_PATH)
@@ -16,7 +19,20 @@ else ()
     message(FATAL_ERROR "Could not find HIP. Ensure that HIP is either installed in /opt/rocm/hip or the variable HIP_PATH is set to point to the right location.")
 endif ()
 
-set(HIP_LINKING_LIBS hip_hcc)  # hip lib for dcu.
+## if it is NV, set NVCC flags
+if (NOT DEFINED HIP_PLATFORM)
+    if (DEFINED $ENV{HIP_PLATFORM})
+        set(HIP_PLATFORM $ENV{HIP_PLATFORM})
+    endif ()
+endif ()
+if (DEFINED HIP_PLATFORM)
+    if (${HIP_PLATFORM} MATCHES "^(Nvidia|NVIDIA|nvidia)$")
+        set(POT_NV_PLATFORM ON)
+    endif ()
+endif ()
+if (NV_PLATFORM)
+    set(HIP_NVCC_FLAGS "${HIP_NVCC_FLAGS} -rdc=true")
+endif ()
 
 ## check MPI
 if (HIP_POT_MPI_ENABLE_FLAG)

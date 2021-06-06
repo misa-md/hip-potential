@@ -1,4 +1,6 @@
 
+include(configure.cmake)
+
 set(HIP_POT_SOURCE_FILES
         hip_pot.cpp
         hip_pot_device.cc
