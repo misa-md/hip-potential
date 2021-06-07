@@ -92,26 +92,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
 }
 
 void hip_pot::assignDevicePot(_type_device_pot device_pot) {
-  _type_device_table_size n = device_pot.n_eles;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_eam_eles), &(n), sizeof(_type_device_table_size)));
-
-  _type_device_pot_table_meta *dev_meta_ptr = device_pot.ptr_device_pot_meta;
-  const size_t meta_ptr_size = sizeof(_type_device_pot_table_meta *);
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables_metadata), &(dev_meta_ptr), meta_ptr_size));
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_ele_charge_table_metadata), &(dev_meta_ptr), meta_ptr_size));
-  dev_meta_ptr += n;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_embedded_energy_table_metadata), &(dev_meta_ptr), meta_ptr_size));
-  dev_meta_ptr += n;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_pair_table_metadata), &(dev_meta_ptr), meta_ptr_size));
-
-  _type_device_pot_spline **dev_spline_ptr = device_pot.ptr_device_pot_tables;
-  const size_t spline_ptr_size = sizeof(_type_device_pot_spline **);
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables), &(dev_spline_ptr), spline_ptr_size));
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_ele_charge_density), &(dev_spline_ptr), spline_ptr_size));
-  dev_spline_ptr += n;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_embedded_energy), &(dev_spline_ptr), spline_ptr_size));
-  dev_spline_ptr += n;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_pair), &(dev_spline_ptr), spline_ptr_size));
+  set_device_variables(device_pot.n_eles, device_pot.ptr_device_pot_meta, device_pot.ptr_device_pot_tables);
 }
 
 void hip_pot::destroyDevicePotTables(_type_device_pot device_pot) {

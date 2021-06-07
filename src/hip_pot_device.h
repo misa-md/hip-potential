@@ -40,6 +40,16 @@
   // the similar as above, but it is for pair potential tables.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_pair_table_metadata;
 
+  /**
+   * set global variables via `hipMemcpyToSymbol` here, including elements size, metadata and spline data.
+   * \param n_eam_elements number of elements on eam potential system
+   * \param metadata_ptr metadata of the eam potential data and spine.
+   * \param spline_ptr spline data of eam potential.
+   */
+  void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
+                            hip_pot::_type_device_pot_table_meta *metadata_ptr,
+                            hip_pot::_type_device_pot_spline **spline_ptr);
+
 // } // namespace hip_pot
 
 #endif // HIP_POT_DEVICE_H
