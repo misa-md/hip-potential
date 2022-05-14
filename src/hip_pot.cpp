@@ -2,10 +2,12 @@
 // Created by genshen on 2020-05-13
 //
 
+#include <cassert>
+#include <hip/hip_runtime.h>
+
 #include "hip_pot.h"
 #include "hip_macros.h"
 #include "hip_pot_device.h"
-#include <hip/hip_runtime.h>
 
 hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<atom_type::_type_atomic_no> _pot_types) {
   atom_type::_type_atom_types n_eles = _pot_types.size();
@@ -18,6 +20,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   _type_device_pot_table_meta *p_tables_metadata = new _type_device_pot_table_meta[tables];
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto elec = _pot->electron_density.getEamItemByType(_pot_types[i]);
+    assert(elec != nullptr);
     p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = elec->x0, .inv_dx = elec->invDx, .n = static_cast<_type_device_table_size>(elec->n)};
     orgin_data_n += elec->n;
@@ -25,6 +28,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto emb = _pot->embedded.getEamItemByType(_pot_types[i]);
+    assert(emb != nullptr);
     p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = emb->x0, .inv_dx = emb->invDx, .n = static_cast<_type_device_table_size>(emb->n)};
     orgin_data_n += emb->n;
@@ -33,6 +37,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     for (_type_device_table_size j = i; j < n_eles; j++) {
       auto pair = _pot->eam_phi.getPhiByEamPhiByType(_pot_types[i], _pot_types[j]);
+      assert(pair != nullptr);
       p_tables_metadata[meta_i] = _type_device_pot_table_meta{
           .x0 = pair->x0, .inv_dx = pair->invDx, .n = static_cast<_type_device_table_size>(pair->n)};
       orgin_data_n += pair->n;
@@ -45,6 +50,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   _type_device_table_size index = 0;
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto elec = _pot->electron_density.getEamItemByType(_pot_types[i]);
+    assert(elec != nullptr);
     _type_device_pot_spline *spline_data_device = nullptr;
     HIP_CHECK(hipMalloc((void **)&spline_data_device, sizeof(_type_device_pot_spline) * (elec->n + 1)));
     HIP_CHECK(hipMemcpy(spline_data_device, elec->spline, sizeof(_type_device_pot_spline) * (elec->n + 1),
@@ -54,6 +60,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     auto emb = _pot->embedded.getEamItemByType(_pot_types[i]);
+    assert(emb != nullptr);
     _type_device_pot_spline *spline_data_device = nullptr;
     HIP_CHECK(hipMalloc((void **)&spline_data_device, sizeof(_type_device_pot_spline) * (emb->n + 1)));
     HIP_CHECK(hipMemcpy(spline_data_device, emb->spline, sizeof(_type_device_pot_spline) * (emb->n + 1),
@@ -64,6 +71,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   for (_type_device_table_size i = 0; i < n_eles; i++) {
     for (_type_device_table_size j = i; j < n_eles; j++) {
       auto pair = _pot->eam_phi.getPhiByEamPhiByType(_pot_types[i], _pot_types[j]);
+      assert(pair != nullptr);
       _type_device_pot_spline *spline_data_device = nullptr;
       HIP_CHECK(hipMalloc((void **)&spline_data_device, sizeof(_type_device_pot_spline) * (pair->n + 1)));
       HIP_CHECK(hipMemcpy(spline_data_device, pair->spline, sizeof(_type_device_pot_spline) * (pair->n + 1),
