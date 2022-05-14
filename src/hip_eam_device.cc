@@ -16,7 +16,7 @@ inline __device__ _device_spline_data findSpline(const hip_pot::_type_device_pot
                                                  const hip_pot::_type_device_pot_table_meta meta) {
   double p = value * meta.inv_dx + 1.0;
   int m = static_cast<int>(p);
-  m = fmax(1, fmin(m, (meta.n - 1)));
+  m = fmax(1.0, fmin(static_cast<double>(m), static_cast<double>(meta.n - 1)));
   p -= m;
   p = fmin(p, 1.0);
   return _device_spline_data{&(spline[m][0]), p};

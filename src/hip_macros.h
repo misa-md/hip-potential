@@ -5,6 +5,7 @@
 #ifndef HIP_POT_MACROS_H
 #define HIP_POT_MACROS_H
 
+#include <iostream>
 #include <hip/hip_runtime.h>
 
 /**

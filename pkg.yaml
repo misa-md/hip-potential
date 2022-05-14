@@ -4,11 +4,10 @@ version: 2
 args:
 
 
-pkg: "git.hpcer.dev/HPCer/CrystalMD/hip-pot"
+pkg: "git.hpcer.dev/HPCer/CrystalMD/hip-potential"
 target: hip-pot
 
 dependencies:
   packages:
-    git.hpcer.dev/HPCer/CrystalMD/potential: {version: v0.1.0, target: pot}
+    git.hpcer.dev/HPCer/MISA-MD/potential: {version: v0.2.0, target: pot}
     github.com/google/googletest: {version: release-1.10.0, target: GTest}
-    github.com/google/benchmark: {version: v1.5.0, target: benchmark, features: ["BENCHMARK_ENABLE_TESTING=OFF"]}
