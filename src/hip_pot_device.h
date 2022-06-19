@@ -20,13 +20,13 @@
 // namespace hip_pot {
   // potential data on device side
   // gloabl tables pointer, contains several kinds of tables.
-  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_tables;
+  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_tables;
   // spline data of electron charge density tables for multiple atomic elements on device.
-  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_ele_charge_density;
+  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_ele_charge_density;
   // the similar as above, but it is for embedded energy tables.
-  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy;
+  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_embedded_energy;
   // the similar as above, but it is for pair potential tables.
-  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_pair;
+  extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_pair;
 
   // number of elements in potential
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_table_size pot_eam_eles;

@@ -10,9 +10,12 @@
 
 namespace hip_pot {
   typedef struct {
+    // device array of all metadata of all elements type and table type.
     _type_device_pot_table_meta *ptr_device_pot_meta;
+    // it is device data and points to ptr_device_pot_data array which is categoried by elements type and table type
     _type_device_pot_spline **ptr_device_pot_tables;
-    atom_type::_type_atom_types n_eles; // elements in potential tables.
+    _type_device_pot_spline *device_pot_data; // pointer to device data
+    atom_type::_type_atom_types n_eles;       // elements in potential tables.
   } _type_device_pot;
 
   /**

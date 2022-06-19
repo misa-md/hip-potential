@@ -4,14 +4,17 @@
 
 #include <hip/hip_runtime.h>
 
-#include "hip_pot_device.h"
 #include "hip_macros.h"
+#include "hip_pot_device.h"
+#include "hip_pot_dev_tables_compact.hpp"
 
 // namespace hip_pot {
-__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_tables = nullptr;
-__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_ele_charge_density = nullptr;
-__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_embedded_energy = nullptr;
-__device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_spline **pot_table_pair = nullptr;
+
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_tables = nullptr;
+// array of spline of each alloy.
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_ele_charge_density = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_embedded_energy = nullptr;
+__device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_pair = nullptr;
 
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_table_size pot_eam_eles = 0;
 

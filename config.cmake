@@ -1,5 +1,6 @@
 option(HIP_POT_MPI_ENABLE_FLAG "Enable MPI" ON) # enable MPI
 option(HIP_POT_TEST_BUILD_ENABLE_FLAG "Enable building tests" ON) # enable test
+option(HIP_POT_COMPACT_MEM_LAYOUT "Enable compact memory laryout for potentail table" OFF)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
