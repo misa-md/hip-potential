@@ -19,6 +19,21 @@ namespace hip_pot {
   } _type_device_pot;
 
   /**
+   * calculate and copy metadata of each potential table to device side.
+   *
+   * \param pot origin potential data in CPU side.
+   * \param _pot_types list of atoms types.
+   * \param p_tables_metadata the array to store metadata on host side.
+   * \param p_device_tables_metadata the array to store metadata on device side.
+   * \param tables number of potential tables.
+   * \param n_eles number of element types in potential tables.
+   */
+  void potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no> _pot_types,
+                       _type_device_pot_table_meta *p_tables_metadata,
+                       _type_device_pot_table_meta *p_device_tables_metadata, const _type_device_table_size tables,
+                       const atom_type::_type_atom_types n_eles);
+
+  /**
    * copy potential data after splining to devices
    * \param pot: origin potential data in CPU side.
    * \param _pot_types: types of atoms.
