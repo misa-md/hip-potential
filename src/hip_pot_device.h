@@ -44,7 +44,8 @@
    * set global variables via `hipMemcpyToSymbol` here, including elements size, metadata and spline data.
    * \param n_eam_elements number of elements on eam potential system
    * \param metadata_ptr metadata of the eam potential data and spine.
-   * \param spline_ptr spline data of eam potential.
+   * \param spline_ptr spline data of eam potential. It must be a device array in incompact mode,
+   *   it must be a host array in compact mode.
    */
   void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
                             hip_pot::_type_device_pot_table_meta *metadata_ptr,

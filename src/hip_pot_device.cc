@@ -24,6 +24,12 @@ __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_embedde
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_pair_table_metadata = nullptr;
 // } // namespace hip_pot
 
+#ifdef HIP_POT_COMPACT_MEM_LAYOUT
+#define POT_SYMBOL_COPY_SRC(ptr) (ptr)
+#else
+#define POT_SYMBOL_COPY_SRC(ptr) &(ptr)
+#endif
+
 void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
                           hip_pot::_type_device_pot_table_meta *metadata_ptr,
                           hip_pot::_type_device_pot_spline **spline_ptr) {
@@ -40,12 +46,15 @@ void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
 
   hip_pot::_type_device_pot_spline **dev_spline_ptr = spline_ptr;
   const size_t spline_ptr_size = sizeof(hip_pot::_type_device_pot_spline **);
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables), &(dev_spline_ptr), spline_ptr_size));
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_ele_charge_density), &(dev_spline_ptr), spline_ptr_size));
+
+  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables), POT_SYMBOL_COPY_SRC(dev_spline_ptr), spline_ptr_size));
+  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_ele_charge_density), POT_SYMBOL_COPY_SRC(dev_spline_ptr),
+                              spline_ptr_size));
   dev_spline_ptr += n_eam_elements;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_embedded_energy), &(dev_spline_ptr), spline_ptr_size));
+  HIP_CHECK(
+      hipMemcpyToSymbol(HIP_SYMBOL(pot_table_embedded_energy), POT_SYMBOL_COPY_SRC(dev_spline_ptr), spline_ptr_size));
   dev_spline_ptr += n_eam_elements;
-  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_pair), &(dev_spline_ptr), spline_ptr_size));
+  HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_pair), POT_SYMBOL_COPY_SRC(dev_spline_ptr), spline_ptr_size));
 }
 
 // As part of optimization,

@@ -8,6 +8,7 @@
 #include "hip_macros.h"
 #include "hip_pot.h"
 #include "hip_pot_device.h"
+#include "pot_building_config.h"
 
 void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no> _pot_types,
                               _type_device_pot_table_meta *p_tables_metadata,
@@ -109,19 +110,25 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   HIP_CHECK(
       hipMemcpy(p_device_pot_tables, p_pot_tables, sizeof(_type_device_pot_spline *) * tables, hipMemcpyHostToDevice));
 
-  delete[] p_pot_tables;
   return _type_device_pot{.ptr_device_pot_meta = p_device_tables_metadata,
                           .ptr_device_pot_tables = p_device_pot_tables,
+                          .ptr_host_pot_tables = p_pot_tables,
                           .device_pot_data = spline_data_device,
                           .n_eles = n_eles};
 }
 
 void hip_pot::assignDevicePot(_type_device_pot device_pot) {
+#ifndef HIP_POT_COMPACT_MEM_LAYOUT
   set_device_variables(device_pot.n_eles, device_pot.ptr_device_pot_meta, device_pot.ptr_device_pot_tables);
+#endif
+#ifdef HIP_POT_COMPACT_MEM_LAYOUT
+  set_device_variables(device_pot.n_eles, device_pot.ptr_device_pot_meta, device_pot.ptr_host_pot_tables);
+#endif
 }
 
 void hip_pot::destroyDevicePotTables(_type_device_pot device_pot) {
   HIP_CHECK(hipFree(device_pot.ptr_device_pot_meta));
   HIP_CHECK(hipFree(device_pot.device_pot_data));
+  delete []device_pot.ptr_host_pot_tables;
   HIP_CHECK(hipFree(device_pot.ptr_device_pot_tables));
 }

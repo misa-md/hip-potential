@@ -14,6 +14,8 @@ namespace hip_pot {
     _type_device_pot_table_meta *ptr_device_pot_meta;
     // it is device data and points to ptr_device_pot_data array which is categoried by elements type and table type
     _type_device_pot_spline **ptr_device_pot_tables;
+    // the same as above, but its data are on host side.
+    _type_device_pot_spline **ptr_host_pot_tables;
     _type_device_pot_spline *device_pot_data; // pointer to device data
     atom_type::_type_atom_types n_eles;       // elements in potential tables.
   } _type_device_pot;
