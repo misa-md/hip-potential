@@ -8,6 +8,13 @@
 #include <iostream>
 #include <hip/hip_runtime.h>
 
+
+#if defined POT_NV_PLATFORM
+#define __DEVICE_CONSTANT__ // ignore constant
+#else
+#define __DEVICE_CONSTANT__ __constant__
+#endif
+
 /**
  * macro for checking result of hip operation.
  */

@@ -7,14 +7,9 @@
 
 #include <hip/hip_runtime.h>
 
-#include "pot_building_config.h"
+#include "hip_macros.h"
 #include "hip_pot_types.h"
-
-#if defined POT_NV_PLATFORM
-#define __DEVICE_CONSTANT__ // ignore constant
-#else
-#define __DEVICE_CONSTANT__ __constant__
-#endif
+#include "pot_building_config.h"
 
 // fixme: dont use namespace here, until issue closed: https://github.com/ROCm-Developer-Tools/HIP/issues/1904
 // namespace hip_pot {
