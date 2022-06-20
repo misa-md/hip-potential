@@ -5,14 +5,14 @@
 #include "hip_eam_device.h"
 #include "hip_pot.h"
 #include "hip_pot_dev_tables_compact.hpp"
-#include "hip_pot_device.h"
+#include "hip_pot_device_global_vars.h"
 
 struct _device_spline_data {
-  const hip_pot::_type_device_pot_element *spline; // spline (it is a 1d array with length 7.)
-  const double p;                                  // x value in ax^3+bx^2+cx+d for calculating interpolation result.
+  const hip_pot::_type_device_pot_table_item *spline; // spline (it is a 1d array with length 7.)
+  const double p;                                     // x value in ax^3+bx^2+cx+d for calculating interpolation result.
 };
 
-__device__ __forceinline__ _device_spline_data findSpline(const hip_pot::_type_device_pot_element value,
+__device__ __forceinline__ _device_spline_data findSpline(const hip_pot::_type_device_pot_table_item value,
                                                           const hip_pot::_type_device_pot_spline *spline,
                                                           const hip_pot::_type_device_pot_table_meta meta) {
   double p = value * meta.inv_dx + 1.0;
@@ -25,7 +25,7 @@ __device__ __forceinline__ _device_spline_data findSpline(const hip_pot::_type_d
 
 // find electron density spline
 __device__ __forceinline__ _device_spline_data deviceRhoSpline(const atom_type::_type_prop_key key,
-                                                               hip_pot::_type_device_pot_element v) {
+                                                               hip_pot::_type_device_pot_table_item v) {
   const hip_pot::_type_device_pot_table_meta meta = pot_ele_charge_table_metadata[key];
   const hip_pot::_type_device_pot_spline *spline = pot_table_ele_charge_density_by_key(meta.n, key);
   return findSpline(v, spline, meta);
@@ -33,7 +33,7 @@ __device__ __forceinline__ _device_spline_data deviceRhoSpline(const atom_type::
 
 // find embed energy spline
 __device__ __forceinline__ _device_spline_data deviceEmbedSpline(const atom_type::_type_prop_key key,
-                                                                 hip_pot::_type_device_pot_element v) {
+                                                                 hip_pot::_type_device_pot_table_item v) {
   const hip_pot::_type_device_pot_table_meta meta = pot_embedded_energy_table_metadata[key];
   const hip_pot::_type_device_pot_spline *spline = pot_table_embedded_energy_by_key(meta.n, key);
   return findSpline(v, spline, meta);
@@ -42,7 +42,7 @@ __device__ __forceinline__ _device_spline_data deviceEmbedSpline(const atom_type
 // find pair potential spline.
 __device__ __forceinline__ _device_spline_data devicePhiSplineByType(atom_type::_type_prop_key key_from,
                                                                      atom_type::_type_prop_key key_to,
-                                                                     hip_pot::_type_device_pot_element v) {
+                                                                     hip_pot::_type_device_pot_table_item v) {
   if (key_from > key_to) {
     // swap from and to.
     atom_type::_type_prop_key temp = key_from;
