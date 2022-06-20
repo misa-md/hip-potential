@@ -2,15 +2,18 @@
 // Created by genshen on 2020-05-14
 //
 
-
 #include <hip/hip_runtime.h>
 
 #include "eam_calc_test_device.h"
 #include "hip_eam_device.h"
 #include "hip_macros.h"
-#include "hip_pot_device.h"
 #include "hip_pot_dev_tables_compact.hpp"
+#include "hip_pot_device.h"
 
+#define dev_assert(X)                                                                                                  \
+  if (!(X))                                                                                                            \
+    printf("assert failed in tid %d: %s, %d\n", threadIdx.x, __FILE__, __LINE__);                                      \
+  return;
 
 __global__ void _kernelCheckSplineCopy(int ele_size, int data_size) {
   double fd = 0.0;
@@ -21,11 +24,11 @@ __global__ void _kernelCheckSplineCopy(int ele_size, int data_size) {
     for (int k = 0; k < data_size; k++) {
       for (int s = 0; s < 7; s++) {
         if (elec[k][s] != fd) {
-          abort();
+          dev_assert(false);
         }
         fd += 1.0;
         if (emb[k][s] != fd) {
-          abort();
+          dev_assert(false);
         }
         fd += 1.0;
       }
@@ -37,7 +40,7 @@ __global__ void _kernelCheckSplineCopy(int ele_size, int data_size) {
       for (int k = 0; k < data_size; k++) {
         for (int s = 0; s < 7; s++) {
           if (pair[k][s] != fd) {
-            abort();
+            dev_assert(false);
           }
           fd += 1.0;
         }
