@@ -15,7 +15,7 @@ void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no>
                               _type_device_pot_table_meta *p_device_tables_metadata,
                               const _type_device_table_size tables, const atom_type::_type_atom_types n_eles) {
   // the total number of data in origin potential tables.
-  _type_device_table_size orgin_data_n = 0;
+  _type_device_table_size origin_data_n = 0;
   // generate tables metadata
   _type_device_table_size meta_i = 0;
   for (_type_device_table_size i = 0; i < n_eles; i++) {
@@ -23,7 +23,7 @@ void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no>
     assert(elec != nullptr);
     p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = elec->x0, .inv_dx = elec->invDx, .n = static_cast<_type_device_table_size>(elec->n)};
-    orgin_data_n += elec->n;
+    origin_data_n += elec->n;
     meta_i++;
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
@@ -31,7 +31,7 @@ void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no>
     assert(emb != nullptr);
     p_tables_metadata[meta_i] = _type_device_pot_table_meta{
         .x0 = emb->x0, .inv_dx = emb->invDx, .n = static_cast<_type_device_table_size>(emb->n)};
-    orgin_data_n += emb->n;
+    origin_data_n += emb->n;
     meta_i++;
   }
   for (_type_device_table_size i = 0; i < n_eles; i++) {
@@ -40,7 +40,7 @@ void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no>
       assert(pair != nullptr);
       p_tables_metadata[meta_i] = _type_device_pot_table_meta{
           .x0 = pair->x0, .inv_dx = pair->invDx, .n = static_cast<_type_device_table_size>(pair->n)};
-      orgin_data_n += pair->n;
+      origin_data_n += pair->n;
       meta_i++;
     }
   }
@@ -60,7 +60,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   HIP_CHECK(hipMalloc((void **)&p_device_tables_metadata, sizeof(_type_device_pot_table_meta) * tables));
   potCopyMetadata(_pot, _pot_types, p_host_tables_metadata, p_device_tables_metadata, tables, n_eles);
 
-  // calculate spline number (total number of splines) for mallocing device array.
+  // calculate spline number (total number of splines) for allocating device array.
   _type_device_table_size spline_num = 0;
   for (_type_device_table_size i = 0; i < tables; i++) {
     spline_num += p_host_tables_metadata[i].n + 1;

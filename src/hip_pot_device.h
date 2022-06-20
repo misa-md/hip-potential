@@ -19,7 +19,7 @@
 // fixme: dont use namespace here, until issue closed: https://github.com/ROCm-Developer-Tools/HIP/issues/1904
 // namespace hip_pot {
   // potential data on device side
-  // gloabl tables pointer, contains several kinds of tables.
+  // global tables pointer, contains several kinds of tables.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_tables;
   // spline data of electron charge density tables for multiple atomic elements on device.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_table_ele_charge_density;
@@ -33,7 +33,7 @@
 
   // metadata of each potential table.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_tables_metadata;
-  // orgin data of electron charge density tables for multiple atomic elements on device.
+  // origin data of electron charge density tables for multiple atomic elements on device.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_ele_charge_table_metadata;
   // the similar as above, but it is for embedded energy tables.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_embedded_energy_table_metadata;

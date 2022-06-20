@@ -39,7 +39,7 @@ __device__ __forceinline__ _device_spline_data deviceEmbedSpline(const atom_type
   return findSpline(v, spline, meta);
 }
 
-// find pair potential spilne.
+// find pair potential spline.
 __device__ __forceinline__ _device_spline_data devicePhiSplineByType(atom_type::_type_prop_key key_from,
                                                                      atom_type::_type_prop_key key_to,
                                                                      hip_pot::_type_device_pot_element v) {

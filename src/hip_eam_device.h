@@ -11,7 +11,7 @@
 
 namespace hip_pot {
   /**
-   * calculate force comtribution from atom j to atom i.
+   * calculate force contribution from atom j to atom i.
    * \param key_from the type of atom j.
    * \param key_to the type of atom i.
    * \param dist2 distance^2 of the two atoms.

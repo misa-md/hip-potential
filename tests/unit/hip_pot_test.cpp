@@ -30,7 +30,7 @@ TEST_F(EamPotTest, hip_pot_check_spline_copy_test) {
         fd += 1.0;
       }
     }
-    // set pair enregy splines
+    // set pair energy splines
     for (hip_pot::_type_device_table_size j = i; j < ELE_SIZE; j++) {
       auto pair = _pot->eam_phi.getPhiByEamPhiByType(_pot_types[i], _pot_types[j]);
       for (int k = 0; k < DATA_SIZE; k++) {

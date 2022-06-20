@@ -60,7 +60,7 @@ void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
 // As part of optimization,
 // if compiler will see global device variables is not used anywhere it would delete it.
 // We just use the variables here.
-// This kernel function will not never be called on host side.
+// This kernel function will not be called on host side.
 __global__ void _ref_device_variables() {
   pot_eam_eles = 1;
 

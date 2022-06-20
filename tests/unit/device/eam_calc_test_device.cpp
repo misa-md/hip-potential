@@ -30,7 +30,7 @@ __global__ void _kernelCheckSplineCopy(int ele_size, int data_size) {
         fd += 1.0;
       }
     }
-    // set pair enregy splines
+    // set pair energy splines
     for (hip_pot::_type_device_table_size j = i; j < ele_size; j++) {
       int index = ele_size * i - (i + 1) * i / 2 + j;
       auto pair = pot_table_pair_by_key(data_size, index);
@@ -52,7 +52,7 @@ void checkPotSplinesCopy(int ele_size, int data_size) {
 
 __global__ void _kernelEamForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from,
                                 double *df_to, double *dist2, double *forces, size_t len) {
-  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // global thread id
   int threads = hipGridDim_x * hipBlockDim_x;              // total threads
   for (int i = id; i < len; i += threads) {
     forces[i] = hip_pot::hipToForce(key_from[i], key_to[i], dist2[i], df_from[i], df_to[i]);
@@ -99,7 +99,7 @@ void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key 
 
 __global__ void _kernelEamChargeDensity(const atom_type::_type_prop_key *keys, const double *dist2, double *rhos,
                                         size_t len) {
-  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // global thread id
   int threads = hipGridDim_x * hipBlockDim_x;              // total threads
   for (int i = id; i < len; i += threads) {
     rhos[i] = hip_pot::hipChargeDensity(keys[i], dist2[i]);
@@ -132,7 +132,7 @@ void deviceEamChargeDensity(atom_type::_type_prop_key *keys, double *dist2, doub
 
 __global__ void _kernelEamDEmbedEnergy(const atom_type::_type_prop_key *keys, const double *rhos, double *dfs,
                                        size_t len) {
-  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // gloabl thread id
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // global thread id
   int threads = hipGridDim_x * hipBlockDim_x;              // total threads
   for (int i = id; i < len; i += threads) {
     dfs[i] = hip_pot::hipDEmbedEnergy(keys[i], rhos[i]);
