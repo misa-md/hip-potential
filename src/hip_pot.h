@@ -43,7 +43,8 @@ namespace hip_pot {
   _type_device_pot potCopyHostToDevice(eam *pot, std::vector<atom_type::_type_atomic_no> _pot_types);
 
   /**
-   * set consts in file hip_pot_device, so that we can access potential metadata and splines in kernel function.
+   * set consts in file hip_pot_device_global_vars, so that we can access potential metadata and splines in kernel
+   * function.
    */
   void assignDevicePot(_type_device_pot device_pot);
 

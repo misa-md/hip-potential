@@ -5,7 +5,7 @@
 #include "hip_eam_device.h"
 #include "hip_pot.h"
 #include "hip_pot_dev_tables_compact.hpp"
-#include "hip_pot_device.h"
+#include "hip_pot_device_global_vars.h"
 
 struct _device_spline_data {
   const hip_pot::_type_device_pot_element *spline; // spline (it is a 1d array with length 7.)

@@ -10,7 +10,7 @@
 
 #include <eam.h>
 
-#include "hip_pot_device.h"
+#include "hip_pot_device_global_vars.h"
 #include "hip_pot_types.h"
 #include "pot_building_config.h"
 

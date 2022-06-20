@@ -2,8 +2,8 @@
 // Created by genshen on 2020-05-13
 //
 
-#ifndef HIP_POT_DEVICE_H
-#define HIP_POT_DEVICE_H
+#ifndef HIP_POT_DEVICE_GLOBAL_VARS_H
+#define HIP_POT_DEVICE_GLOBAL_VARS_H
 
 #include <hip/hip_runtime.h>
 
@@ -48,4 +48,4 @@
 
 // } // namespace hip_pot
 
-#endif // HIP_POT_DEVICE_H
+#endif // HIP_POT_DEVICE_GLOBAL_VARS_H

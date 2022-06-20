@@ -8,7 +8,7 @@
 #include "hip_eam_device.h"
 #include "hip_macros.h"
 #include "hip_pot_dev_tables_compact.hpp"
-#include "hip_pot_device.h"
+#include "hip_pot_device_global_vars.h"
 
 #define dev_assert(X)                                                                                                  \
   if (!(X))                                                                                                            \
