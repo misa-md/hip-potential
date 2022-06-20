@@ -20,12 +20,12 @@ add_executable(${HIP_POT_UINT_TEST_NAME} ${TEST_SOURCE_FILES} ${TEST_HEADER_FILE
 if (TARGET GTest::gtest AND TARGET GTest::gtest_main)
     # googletest is added by `find_package(GTest)`
     target_link_libraries(${HIP_POT_UINT_TEST_NAME}
-            PRIVATE GTest::gtest GTest::gtest_main ${HIP_POT_LIB_NAME} ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
+            PRIVATE GTest::gtest GTest::gtest_main ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
             )
 else ()
     # googletest is added by `add_subdirectory`
     target_link_libraries(${HIP_POT_UINT_TEST_NAME}
-            PRIVATE gtest gtest_main ${HIP_POT_LIB_NAME} ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
+            PRIVATE gtest gtest_main ${DEVICE_TEST_LIB_NAME} ${HIP_POT_EXTRA_LIBS}
             )
 endif ()
 
