@@ -4,9 +4,10 @@
 
 #include <hip/hip_runtime.h>
 
-#include "hip_macros.h"
 #include "hip_pot_dev_tables_compact.hpp"
 #include "hip_pot_device_global_vars.h"
+#include "hip_pot_macros.h"
+#include "pot_building_config.h"
 
 // namespace hip_pot {
 

@@ -5,9 +5,9 @@
 #include <cassert>
 #include <hip/hip_runtime.h>
 
-#include "hip_macros.h"
 #include "hip_pot.h"
 #include "hip_pot_device_global_vars.h"
+#include "hip_pot_macros.h"
 #include "pot_building_config.h"
 
 void hip_pot::potCopyMetadata(eam *_pot, std::vector<atom_type::_type_atomic_no> _pot_types,

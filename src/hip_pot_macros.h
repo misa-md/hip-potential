@@ -8,6 +8,7 @@
 #include <iostream>
 #include <hip/hip_runtime.h>
 
+#include "pot_building_config.h"
 
 #if defined POT_NV_PLATFORM
 #define __DEVICE_CONSTANT__ // ignore constant

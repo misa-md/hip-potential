@@ -7,9 +7,8 @@
 
 #include <hip/hip_runtime.h>
 
-#include "hip_macros.h"
+#include "hip_pot_macros.h"
 #include "hip_pot_types.h"
-#include "pot_building_config.h"
 
 // fixme: dont use namespace here, until issue closed: https://github.com/ROCm-Developer-Tools/HIP/issues/1904
 // namespace hip_pot {
