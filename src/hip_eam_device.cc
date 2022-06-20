@@ -4,6 +4,7 @@
 
 #include "hip_eam_device.h"
 #include "hip_pot.h"
+#include "hip_pot_dev_tables_compact.hpp"
 #include "hip_pot_device.h"
 
 struct _device_spline_data {
@@ -11,9 +12,9 @@ struct _device_spline_data {
   const double p;                                  // x value in ax^3+bx^2+cx+d for calculating interpolation result.
 };
 
-inline __device__ _device_spline_data findSpline(const hip_pot::_type_device_pot_element value,
-                                                 const hip_pot::_type_device_pot_spline *spline,
-                                                 const hip_pot::_type_device_pot_table_meta meta) {
+__device__ __forceinline__ _device_spline_data findSpline(const hip_pot::_type_device_pot_element value,
+                                                          const hip_pot::_type_device_pot_spline *spline,
+                                                          const hip_pot::_type_device_pot_table_meta meta) {
   double p = value * meta.inv_dx + 1.0;
   int m = static_cast<int>(p);
   m = fmax(1.0, fmin(static_cast<double>(m), static_cast<double>(meta.n - 1)));
@@ -23,21 +24,25 @@ inline __device__ _device_spline_data findSpline(const hip_pot::_type_device_pot
 }
 
 // find electron density spline
-inline __device__ _device_spline_data deviceRhoSpline(const atom_type::_type_prop_key key,
-                                                      hip_pot::_type_device_pot_element v) {
-  return findSpline(v, pot_table_ele_charge_density[key], pot_ele_charge_table_metadata[key]);
+__device__ __forceinline__ _device_spline_data deviceRhoSpline(const atom_type::_type_prop_key key,
+                                                               hip_pot::_type_device_pot_element v) {
+  const hip_pot::_type_device_pot_table_meta meta = pot_ele_charge_table_metadata[key];
+  const hip_pot::_type_device_pot_spline *spline = pot_table_ele_charge_density_by_key(meta.n, key);
+  return findSpline(v, spline, meta);
 }
 
 // find embed energy spline
-inline __device__ _device_spline_data deviceEmbedSpline(const atom_type::_type_prop_key key,
-                                                        hip_pot::_type_device_pot_element v) {
-  return findSpline(v, pot_table_embedded_energy[key], pot_embedded_energy_table_metadata[key]);
+__device__ __forceinline__ _device_spline_data deviceEmbedSpline(const atom_type::_type_prop_key key,
+                                                                 hip_pot::_type_device_pot_element v) {
+  const hip_pot::_type_device_pot_table_meta meta = pot_embedded_energy_table_metadata[key];
+  const hip_pot::_type_device_pot_spline *spline = pot_table_embedded_energy_by_key(meta.n, key);
+  return findSpline(v, spline, meta);
 }
 
 // find pair potential spilne.
-inline __device__ _device_spline_data devicePhiSplineByType(atom_type::_type_prop_key key_from,
-                                                            atom_type::_type_prop_key key_to,
-                                                            hip_pot::_type_device_pot_element v) {
+__device__ __forceinline__ _device_spline_data devicePhiSplineByType(atom_type::_type_prop_key key_from,
+                                                                     atom_type::_type_prop_key key_to,
+                                                                     hip_pot::_type_device_pot_element v) {
   if (key_from > key_to) {
     // swap from and to.
     atom_type::_type_prop_key temp = key_from;
@@ -50,8 +55,8 @@ inline __device__ _device_spline_data devicePhiSplineByType(atom_type::_type_pro
   //   0,    1,   2,    3,    4,    5
   // for (i,j) pair, we have: index = [N + (N-1) + (N-i+1)] + (j-i+1) - 1 = Ni-(i+1)*i/2+j
   const hip_pot::_type_device_table_size index = pot_eam_eles * key_from - (key_from + 1) * key_from / 2 + key_to;
-  const hip_pot::_type_device_pot_spline *spline = pot_table_pair[index];
   const hip_pot::_type_device_pot_table_meta meta = pot_pair_table_metadata[index];
+  const hip_pot::_type_device_pot_spline *spline = pot_table_pair_by_key(meta.n, index);
   return findSpline(v, spline, meta);
 }
 

@@ -6,3 +6,4 @@
  */
 
 #cmakedefine POT_NV_PLATFORM
+#cmakedefine HIP_POT_COMPACT_MEM_LAYOUT
