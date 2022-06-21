@@ -10,6 +10,10 @@
 
 #include "pot_building_config.h"
 
+
+#define HIP_POT_INLINE __forceinline__
+
+
 #if defined POT_NV_PLATFORM
 #define __DEVICE_CONSTANT__ // ignore constant
 #else

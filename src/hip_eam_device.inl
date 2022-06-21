@@ -6,11 +6,11 @@
 #include "hip_pot.h"
 #include "hip_pot_dev_tables_compact.hpp"
 #include "hip_pot_device_global_vars.h"
-#include "hip_pot_dev_eam_spline.hpp"
+#include "hip_pot_macros.h"
 
-
-__device__ double hip_pot::hipToForce(const atom_type::_type_prop_key key_from, const atom_type::_type_prop_key key_to,
-                                      const double dist2, const double df_from, const double df_to) {
+__device__ HIP_POT_INLINE double hip_pot::hipToForce(const atom_type::_type_prop_key key_from,
+                                                     const atom_type::_type_prop_key key_to, const double dist2,
+                                                     const double df_from, const double df_to) {
   double fpair;
   double phi, phip, psip, z2, z2p;
 
@@ -37,24 +37,25 @@ __device__ double hip_pot::hipToForce(const atom_type::_type_prop_key key_from, 
   return fpair;
 }
 
-__device__ double hip_pot::hipChargeDensity(const atom_type::_type_prop_key _atom_key, const double dist2) {
+__device__ HIP_POT_INLINE double hip_pot::hipChargeDensity(const atom_type::_type_prop_key _atom_key,
+                                                           const double dist2) {
   const double r = sqrt(dist2);
   const _device_spline_data s = deviceRhoSpline(_atom_key, r);
   return ((s.spline[3] * s.p + s.spline[4]) * s.p + s.spline[5]) * s.p + s.spline[6];
 }
 
-__device__ double hip_pot::hipDEmbedEnergy(const atom_type::_type_prop_key _atom_key, const double rho) {
+__device__ HIP_POT_INLINE double hip_pot::hipDEmbedEnergy(const atom_type::_type_prop_key _atom_key, const double rho) {
   const _device_spline_data s = deviceEmbedSpline(_atom_key, rho);
   return (s.spline[0] * s.p + s.spline[1]) * s.p + s.spline[2];
 }
 
-__device__ double hip_pot::hipEmbedEnergy(const atom_type::_type_prop_key _atom_key, const double rho) {
+__device__ HIP_POT_INLINE double hip_pot::hipEmbedEnergy(const atom_type::_type_prop_key _atom_key, const double rho) {
   const _device_spline_data s = deviceEmbedSpline(_atom_key, rho);
   return ((s.spline[3] * s.p + s.spline[4]) * s.p + s.spline[5]) * s.p + s.spline[6];
 }
 
-__device__ double hip_pot::hipPairPotential(const atom_type::_type_prop_key key_from,
-                                            const atom_type::_type_prop_key key_to, const double dist2) {
+__device__ HIP_POT_INLINE double hip_pot::hipPairPotential(const atom_type::_type_prop_key key_from,
+                                                           const atom_type::_type_prop_key key_to, const double dist2) {
   const double r = sqrt(dist2);
   const _device_spline_data s = devicePhiSplineByType(key_from, key_to, r);
   const double phi_r = ((s.spline[3] * s.p + s.spline[4]) * s.p + s.spline[5]) * s.p + s.spline[6]; // pair_pot * r
