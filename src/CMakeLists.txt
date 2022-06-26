@@ -4,7 +4,6 @@ include(configure.cmake)
 set(HIP_POT_SOURCE_FILES
         hip_pot.cpp
         hip_pot_device_global_vars.cc
-        hip_eam_device.cc
         )
 set_source_files_properties(${HIP_POT_SOURCE_FILES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
 
@@ -51,6 +50,7 @@ install(DIRECTORY "./"
         FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "*.inl"
         )
 
 # install export target and config for find_package
