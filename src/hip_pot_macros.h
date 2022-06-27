@@ -11,7 +11,11 @@
 #include "pot_building_config.h"
 
 
+#if defined HIP_POT_DEVICE_API_INLINE
 #define HIP_POT_INLINE __forceinline__
+#else
+#define HIP_POT_INLINE
+#endif
 
 
 #if defined POT_NV_PLATFORM

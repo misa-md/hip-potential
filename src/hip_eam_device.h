@@ -59,6 +59,8 @@ namespace hip_pot {
 
 } // namespace hip_pot
 
+#ifdef HIP_POT_DEVICE_API_INLINE
 #include "hip_eam_device.inl"
+#endif
 
 #endif // HIP_POT_HIP_EAM_DEVICE_H
