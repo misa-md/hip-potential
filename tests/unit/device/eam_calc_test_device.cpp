@@ -11,8 +11,10 @@
 #include "hip_pot_macros.h"
 
 #define dev_assert(X)                                                                                                  \
-  if (!(X))                                                                                                            \
-    printf("assert failed in tid %d: %s, %d\n", threadIdx.x, __FILE__, __LINE__);                                      \
+  if (!(X)) {                                                                                                          \
+    const int tid = threadIdx.x;                                                                                       \
+    printf("assert failed in tid %d: %s, %d\n", tid, __FILE__, __LINE__);                                              \
+  }                                                                                                                    \
   return;
 
 __global__ void _kernelCheckSplineCopy(int ele_size, int data_size) {

@@ -7,3 +7,5 @@
 
 #cmakedefine POT_NV_PLATFORM
 #cmakedefine HIP_POT_COMPACT_MEM_LAYOUT
+#define HIP_POT_DEVICE_API_INLINE
+

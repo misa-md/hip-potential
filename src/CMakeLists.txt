@@ -3,6 +3,7 @@ include(configure.cmake)
 
 set(HIP_POT_SOURCE_FILES
         hip_pot.cpp
+        hip_eam_device.cc
         hip_pot_device_global_vars.cc
         )
 set_source_files_properties(${HIP_POT_SOURCE_FILES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
