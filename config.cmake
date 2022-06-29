@@ -15,5 +15,8 @@ endif ()
 #############
 set(HIP_POT_LIB_NAME hip_pot)
 
+## cmake header generation
+set(CONFIGURE_GENERATED_PATH ${CMAKE_BINARY_DIR}/generated)
+
 # test
 set(HIP_POT_UINT_TEST_NAME "hip_pot-unit-test")
