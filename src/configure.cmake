@@ -1,3 +1,7 @@
+if(HIP_POT_COMPACT_MEM_LAYOUT_FLAG)
+        set(HIP_POT_COMPACT_MEM_LAYOUT ON)
+endif()
+
 configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/pot_building_config.h.in"
         "${CMAKE_CURRENT_SOURCE_DIR}/pot_building_config.h"
