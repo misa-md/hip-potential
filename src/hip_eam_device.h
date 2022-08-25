@@ -45,8 +45,11 @@ namespace hip_pot {
    * (single atom type).
    * Otherwise, the api `hipToForce` will be called (normal atom types case).
    * \tparam T type of float point number. (currently, it can only be double).
+   * \tparam ALLOW_WARP_DIVERGENCE In CUDA, warp divergence may cause poor performance.
+   * By setting ALLOW_WARP_DIVERGENCE to false can avoid this side effect,
+   * if there are atom pairs having the same types and other atom pairs having different types in a warp.
    */
-  template <typename T>
+  template <typename T, bool ALLOW_WARP_DIVERGENCE = true>
   __device__ HIP_POT_INLINE T hipToForceAdaptive(const atom_type::_type_prop_key key_from,
                                                  const atom_type::_type_prop_key key_to, const T dist2, const T df_from,
                                                  const T df_to);

@@ -66,13 +66,16 @@ __device__ HIP_POT_INLINE T hip_pot::hipToForceSingleType(const atom_type::_type
 
 /**
  * select hipToForce api between single type and double type version.
- * @tparam T type of float point number: float or double.
+ * \tparam T type of float point number: float or double.
+ * \tparam ALLOW_WARP_DIVERGENCE In CUDA, warp divergence may cause poor performance.
+ * By setting ALLOW_WARP_DIVERGENCE to false can avoid this side effect,
+ * if there are atom pairs having the same types and other atom pairs having different types in a warp.
  */
-template <typename T>
+template <typename T, bool ALLOW_WARP_DIVERGENCE = true>
 __device__ HIP_POT_INLINE T hip_pot::hipToForceAdaptive(const atom_type::_type_prop_key key_from,
                                                         const atom_type::_type_prop_key key_to, const T dist2,
                                                         const T df_from, const T df_to) {
-  if (key_from == key_to) {
+  if (ALLOW_WARP_DIVERGENCE && key_from == key_to) {
     return hipToForceSingleType<T>(key_from, dist2, df_from, df_to);
   } else {
     return hip_pot::hipToForce(key_from, key_to, dist2, df_from, df_to);
@@ -110,7 +113,11 @@ template __device__ HIP_POT_INLINE double hip_pot::hipToForceSingleType<double>(
                                                                                 const double df_from,
                                                                                 const double df_to);
 
-template __device__ HIP_POT_INLINE double hip_pot::hipToForceAdaptive<double>(const atom_type::_type_prop_key key_from,
-                                                                              const atom_type::_type_prop_key key_to,
-                                                                              const double dist2, const double df_from,
-                                                                              const double df_to);
+template __device__ HIP_POT_INLINE double
+hip_pot::hipToForceAdaptive<double, false>(const atom_type::_type_prop_key key_from,
+                                           const atom_type::_type_prop_key key_to, const double dist2,
+                                           const double df_from, const double df_to);
+template __device__ HIP_POT_INLINE double
+hip_pot::hipToForceAdaptive<double, true>(const atom_type::_type_prop_key key_from,
+                                          const atom_type::_type_prop_key key_to, const double dist2,
+                                          const double df_from, const double df_to);
