@@ -64,6 +64,16 @@ __global__ void _kernelEamForce(atom_type::_type_prop_key *key_from, atom_type::
   }
 }
 
+__global__ void _kernelEamForceSingleType(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to,
+                                          double *df_from, double *df_to, double *dist2, double *forces, size_t len) {
+  int id = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x; // global thread id
+  int threads = hipGridDim_x * hipBlockDim_x;              // total threads
+  for (int i = id; i < len; i += threads) {
+    forces[i] = hip_pot::hipToForceAdaptive(key_from[i], key_to[i], dist2[i], df_from[i], df_to[i]);
+  }
+}
+
+template <bool SINGLE_TYPE>
 void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from, double *df_to,
                  double *dist2, double *forces, size_t len) {
   const size_t B = 512; // blocks
@@ -89,8 +99,13 @@ void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key 
   HIP_CHECK(hipMemcpy(deviceDfTo, df_to, len * sizeof(double), hipMemcpyHostToDevice));
   HIP_CHECK(hipMemcpy(deviceDist2, dist2, len * sizeof(double), hipMemcpyHostToDevice));
 
-  hipLaunchKernelGGL(_kernelEamForce, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeyFrom, deviceKeyTo, deviceDfFrom,
-                     deviceDfTo, deviceDist2, deviceForces, len);
+  if (SINGLE_TYPE) {
+    hipLaunchKernelGGL(_kernelEamForceSingleType, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeyFrom, deviceKeyTo,
+                       deviceDfFrom, deviceDfTo, deviceDist2, deviceForces, len);
+  } else {
+    hipLaunchKernelGGL(_kernelEamForce, dim3(B, 1), dim3(T, 1), 0, 0, deviceKeyFrom, deviceKeyTo, deviceDfFrom,
+                       deviceDfTo, deviceDist2, deviceForces, len);
+  }
 
   HIP_CHECK(hipMemcpy(forces, deviceForces, len * sizeof(double), hipMemcpyDeviceToHost));
 
@@ -101,6 +116,12 @@ void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key 
   HIP_CHECK(hipFree(deviceDist2));
   HIP_CHECK(hipFree(deviceForces));
 }
+
+template void deviceForce<true>(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from,
+                                double *df_to, double *dist2, double *forces, size_t len);
+
+template void deviceForce<false>(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to,
+                                 double *df_from, double *df_to, double *dist2, double *forces, size_t len);
 
 __global__ void _kernelEamChargeDensity(const atom_type::_type_prop_key *keys, const double *dist2, double *rhos,
                                         size_t len) {
