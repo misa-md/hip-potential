@@ -9,6 +9,7 @@
 
 void checkPotSplinesCopy(int ele_size, int data_size);
 
+template <bool SINGLE_TYPE>
 void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from, double *df_to,
                  double *dist2, double *forces, size_t len);
 
