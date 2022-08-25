@@ -24,9 +24,36 @@ namespace hip_pot {
   __device__ HIP_POT_INLINE double hipToForce(const atom_type::_type_prop_key key_from,
                                               const atom_type::_type_prop_key key_to, const double dist2,
                                               const double df_from, const double df_to);
+
   /**
-   * compute the contribution to electron charge density from atom j of type {@var _atom_key} at location of one atom i.
-   * whose distance is specified by {@var dist2}
+   * Eam force computation api for single atom type.
+   * What is "single atom type": types of i and j is the same when calculating force contribution from atom j to atom i.
+   * In this case, the api implementation can be simplified for better performance.
+   * \tparam T type of float point number. (currently, it can only be double).
+   * \param key the type of atom i and j.
+   * \param dist2 distance^2 of the two atoms.
+   * \param df_from derivative of embedded energy of atom j.
+   * \param df_to derivative of embedded energy of atom i.
+   */
+  template <typename T>
+  __device__ HIP_POT_INLINE T hipToForceSingleType(const atom_type::_type_prop_key key, const T dist2, const T df_from,
+                                                   const T df_to);
+
+  /**
+   * Eam force computation api for both normal atom types and single atom type.
+   * In its implementation, it will call api `hipToForceSingleType` if key_from and key_to are the same
+   * (single atom type).
+   * Otherwise, the api `hipToForce` will be called (normal atom types case).
+   * \tparam T type of float point number. (currently, it can only be double).
+   */
+  template <typename T>
+  __device__ HIP_POT_INLINE T hipToForceAdaptive(const atom_type::_type_prop_key key_from,
+                                                 const atom_type::_type_prop_key key_to, const T dist2, const T df_from,
+                                                 const T df_to);
+
+  /**
+   * compute the contribution to electron charge density from atom j of type {@var _atom_key} at location of one
+   * atom i. whose distance is specified by {@var dist2}
    * @param _atom_key atom type of atom j.
    * @param dist2 the square of the distance between atom i and atom j.
    * @return the contribution to electron charge density from atom j.
