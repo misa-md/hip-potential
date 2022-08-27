@@ -8,7 +8,7 @@
 #include <hip/hip_runtime.h>
 
 #include "hip_pot.h"
-#include "hip_pot_dev_eam_spline.hpp"
+#include "hip_pot_dev_eam_spline_loader.hpp"
 #include "hip_pot_macros.h"
 #include "hip_pot_types.h"
 

@@ -12,6 +12,8 @@ namespace hip_pot {
   typedef struct {
     // device array of all metadata of all elements type and table type.
     _type_device_pot_table_meta *ptr_device_pot_meta;
+    // similar as above, but the whole metadata array is stored on host side.
+    _type_device_pot_table_meta *host_tables_metadata;
     // it is device data and points to ptr_device_pot_data array which is categoried by elements type and table type
     _type_device_pot_spline **ptr_device_pot_tables;
     // the same as above, but its data are on host side.
@@ -53,6 +55,12 @@ namespace hip_pot {
    * \param device_pot pointer of data on devices.
    */
   void destroyDevicePotTables(_type_device_pot device_pot);
+
+  /**
+   * copy EAM spline data to devices side.
+   * @param device_pot
+   */
+  void assignDeviceSegmentedSpline(_type_device_pot device_pot);
 
 } // namespace hip_pot
 

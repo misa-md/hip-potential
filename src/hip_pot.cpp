@@ -6,6 +6,7 @@
 #include <hip/hip_runtime.h>
 
 #include "hip_pot.h"
+#include "hip_pot_dev_eam_segmented_spline.h"
 #include "hip_pot_device_global_vars.h"
 #include "hip_pot_macros.h"
 #include "pot_building_config.h"
@@ -66,7 +67,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
   for (_type_device_table_size i = 0; i < tables; i++) {
     spline_num += p_host_tables_metadata[i].n + 1;
   }
-  delete[] p_host_tables_metadata;
+  /*end of metadata process*/
 
   _type_device_pot_spline *spline_data_device = nullptr;
   HIP_CHECK(hipMalloc((void **)&spline_data_device, sizeof(_type_device_pot_spline) * spline_num));
@@ -112,6 +113,7 @@ hip_pot::_type_device_pot hip_pot::potCopyHostToDevice(eam *_pot, std::vector<at
       hipMemcpy(p_device_pot_tables, p_pot_tables, sizeof(_type_device_pot_spline *) * tables, hipMemcpyHostToDevice));
 
   return _type_device_pot{.ptr_device_pot_meta = p_device_tables_metadata,
+                          .host_tables_metadata = p_host_tables_metadata,
                           .ptr_device_pot_tables = p_device_pot_tables,
                           .ptr_host_pot_tables = p_pot_tables,
                           .device_pot_data = spline_data_device,
@@ -130,6 +132,17 @@ void hip_pot::assignDevicePot(_type_device_pot device_pot) {
 void hip_pot::destroyDevicePotTables(_type_device_pot device_pot) {
   HIP_CHECK(hipFree(device_pot.ptr_device_pot_meta));
   HIP_CHECK(hipFree(device_pot.device_pot_data));
-  delete []device_pot.ptr_host_pot_tables;
+  delete[] device_pot.ptr_host_pot_tables;
+  delete[] device_pot.host_tables_metadata;
   HIP_CHECK(hipFree(device_pot.ptr_device_pot_tables));
+}
+
+void hip_pot::assignDeviceSegmentedSpline(_type_device_pot device_pot) {
+#ifdef HIP_POT_COMPACT_MEM_LAYOUT
+  // todo: only for compact mode.
+  copy_pot_spline_segmented_wrapper(device_pot.n_eles, device_pot.ptr_device_pot_meta, device_pot.host_tables_metadata,
+                                    device_pot.ptr_host_pot_tables[0],
+                                    device_pot.ptr_host_pot_tables[device_pot.n_eles],
+                                    device_pot.ptr_host_pot_tables[device_pot.n_eles + device_pot.n_eles]);
+#endif
 }
