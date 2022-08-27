@@ -21,6 +21,7 @@ namespace hip_pot {
    * \param df_from derivative of embedded energy of atom j.
    * \param df_to derivative of embedded energy of atom i.
    */
+  template <typename PAIR_LOADER = PairSplineLoader, typename RHO_LOADER = RhoSplineLoader>
   __device__ HIP_POT_INLINE double hipToForce(const atom_type::_type_prop_key key_from,
                                               const atom_type::_type_prop_key key_to, const double dist2,
                                               const double df_from, const double df_to);
@@ -35,7 +36,7 @@ namespace hip_pot {
    * \param df_from derivative of embedded energy of atom j.
    * \param df_to derivative of embedded energy of atom i.
    */
-  template <typename T>
+  template <typename T, typename PAIR_LOADER = PairSplineLoader, typename RHO_LOADER = RhoSplineLoader>
   __device__ HIP_POT_INLINE T hipToForceSingleType(const atom_type::_type_prop_key key, const T dist2, const T df_from,
                                                    const T df_to);
 
@@ -49,7 +50,8 @@ namespace hip_pot {
    * By setting ALLOW_WARP_DIVERGENCE to false can avoid this side effect,
    * if there are atom pairs having the same types and other atom pairs having different types in a warp.
    */
-  template <typename T, bool ALLOW_WARP_DIVERGENCE = true>
+  template <typename T, typename PAIR_LOADER = PairSplineLoader, typename RHO_LOADER = RhoSplineLoader,
+            bool ALLOW_WARP_DIVERGENCE = true>
   __device__ HIP_POT_INLINE T hipToForceAdaptive(const atom_type::_type_prop_key key_from,
                                                  const atom_type::_type_prop_key key_to, const T dist2, const T df_from,
                                                  const T df_to);
