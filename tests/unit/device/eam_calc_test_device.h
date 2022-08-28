@@ -5,13 +5,13 @@
 #ifndef HIP_POT_EAM_CALC_TEST_DEVICE_H
 #define HIP_POT_EAM_CALC_TEST_DEVICE_H
 
+#include "eam_calc_kernel.h"
 #include "types.h"
 
 void checkPotSplinesCopy(int ele_size, int data_size);
 
-template <bool SINGLE_TYPE = false, bool TEST_SEGMENTED_SPLINE = false>
 void deviceForce(atom_type::_type_prop_key *key_from, atom_type::_type_prop_key *key_to, double *df_from, double *df_to,
-                 double *dist2, double *forces, size_t len);
+                 double *dist2, double *forces, size_t len, LaunchKernelFunction launch_kernel);
 
 void deviceEamChargeDensity(atom_type::_type_prop_key *keys, double *dist2, double *rhos, size_t len);
 

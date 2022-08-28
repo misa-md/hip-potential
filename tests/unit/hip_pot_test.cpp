@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include "eam_calc_kernel.h"
 #include "eam_calc_test_device.h"
 #include "eam_pot_fixture.h"
 #include "hip_pot.h"
@@ -72,7 +73,7 @@ TEST_F(EamPotTest, hip_pot_force_test) {
   double force_device[LEN];
 
   // test hip_pot::hipToForce
-  deviceForce<false>(key_from, key_to, df_from, df_to, dist2, force_device, LEN);
+  deviceForce(key_from, key_to, df_from, df_to, dist2, force_device, LEN, kernel_wrapper_EamForce);
   for (int i = 0; i < LEN; i++) {
     double force_host = _pot->toForce(key_from[i], key_to[i], dist2[i], df_from[i], df_to[i]);
     EXPECT_DOUBLE_EQ(force_host, force_device[i]);
@@ -105,7 +106,7 @@ TEST_F(EamPotTest, hip_pot_force_single_type_test) {
   double force_device[LEN];
 
   // test hip_pot::hipToForceWrapper
-  deviceForce<true>(key_from, key_to, df_from, df_to, dist2, force_device, LEN);
+  deviceForce(key_from, key_to, df_from, df_to, dist2, force_device, LEN, kernel_wrapper_EamForceSingleType);
   for (int i = 0; i < LEN; i++) {
     double force_host = _pot->toForce(key_from[i], key_to[i], dist2[i], df_from[i], df_to[i]);
     EXPECT_DOUBLE_EQ(force_host, force_device[i]);
