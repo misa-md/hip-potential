@@ -1,10 +1,12 @@
 set(TEST_HEADER_FILES
         eam_pot_fixture.h
+        segmented_eam_pot_fixture.hpp
         )
 
 set(TEST_SOURCE_FILES
         main.cpp
         hip_pot_test.cpp
+        segmented_pot_spline_test.cpp
         )
 
 set(DEVICE_TEST_LIB_NAME "hip_pot_device")

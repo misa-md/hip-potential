@@ -14,10 +14,11 @@ public:
   eam *_pot = nullptr;
   atom_type::_type_prop_key *prop_key_list = nullptr;
 
-  const unsigned int ELE_SIZE = 3;
-  const unsigned int DATA_SIZE = 5000;
+  static constexpr unsigned int ELE_SIZE = 3;
+  static constexpr unsigned int DATA_SIZE = 5000;
 
-  void SetUp() override {
+  void SetUp() override { init(); }
+  void init() {
     const unsigned int root_rank = 0;
     int own_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &own_rank);

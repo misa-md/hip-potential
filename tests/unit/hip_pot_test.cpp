@@ -2,10 +2,11 @@
 // Created by genshen on 2020/5/14.
 //
 
+#include <gtest/gtest.h>
+
 #include "eam_calc_test_device.h"
 #include "eam_pot_fixture.h"
 #include "hip_pot.h"
-#include <gtest/gtest.h>
 
 TEST_F(EamPotTest, hip_pot_init_test) {
   auto _pot_types = std::vector<atom_type::_type_atomic_no>{0, 1, 2};
