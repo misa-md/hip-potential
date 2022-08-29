@@ -93,11 +93,12 @@ __device__ HIP_POT_INLINE T hip_pot::hipToForceAdaptive(const atom_type::_type_p
   }
 }
 
+template <typename RHO_LOADER>
 __device__ HIP_POT_INLINE double hip_pot::hipChargeDensity(const atom_type::_type_prop_key _atom_key,
                                                            const double dist2) {
   const double r = sqrt(dist2);
-  const _device_spline_data s = deviceRhoSpline(_atom_key, r);
-  return ((s.spline[3] * s.p + s.spline[4]) * s.p + s.spline[5]) * s.p + s.spline[6];
+  RHO_LOADER loader = RHO_LOADER(_atom_key, r);
+  return loader.sp1();
 }
 
 __device__ HIP_POT_INLINE double hip_pot::hipDEmbedEnergy(const atom_type::_type_prop_key _atom_key, const double rho) {

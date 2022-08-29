@@ -63,6 +63,7 @@ namespace hip_pot {
    * @param dist2 the square of the distance between atom i and atom j.
    * @return the contribution to electron charge density from atom j.
    */
+  template <typename RHO_LOADER = RhoSplineLoader>
   __device__ HIP_POT_INLINE double hipChargeDensity(const atom_type::_type_prop_key _atom_key, const double dist2);
 
   /**
