@@ -16,8 +16,8 @@ __device__ HIP_POT_INLINE double hip_pot::hipToForce(const atom_type::_type_prop
 
   const double r = sqrt(dist2);
   const _device_spline_data phi_s = devicePhiSplineByType(key_from, key_to, r);
-  const _device_spline_data ele_from_s = deviceRhoSpline(key_from, r);
-  const _device_spline_data ele_to_s = deviceRhoSpline(key_to, r);
+  const _device_spline_data ele_from_s = deviceRhoSpline(key_from, key_to, r);
+  const _device_spline_data ele_to_s = deviceRhoSpline(key_to, key_from, r);
 
   z2 = ((phi_s.spline[3] * phi_s.p + phi_s.spline[4]) * phi_s.p + phi_s.spline[5]) * phi_s.p + phi_s.spline[6];
   // z2 = phi*r
@@ -45,7 +45,7 @@ __device__ HIP_POT_INLINE T hip_pot::hipToForceSingleType(const atom_type::_type
                                                           const T df_from, const T df_to) {
   const T r = sqrt(dist2);
   const _device_spline_data phi_s = devicePhiSplineByType(key, key, r);
-  const _device_spline_data ele_s = deviceRhoSpline(key, r);
+  const _device_spline_data ele_s = deviceRhoSpline(key, key, r);
 
   const T z2 = ((phi_s.spline[3] * phi_s.p + phi_s.spline[4]) * phi_s.p + phi_s.spline[5]) * phi_s.p + phi_s.spline[6];
   // z2 = phi*r
@@ -71,7 +71,7 @@ __device__ HIP_POT_INLINE T hip_pot::hipToForceSingleType(const atom_type::_type
  * By setting ALLOW_WARP_DIVERGENCE to false can avoid this side effect,
  * if there are atom pairs having the same types and other atom pairs having different types in a warp.
  */
-template <typename T, bool ALLOW_WARP_DIVERGENCE = true>
+template <typename T, bool ALLOW_WARP_DIVERGENCE>
 __device__ HIP_POT_INLINE T hip_pot::hipToForceAdaptive(const atom_type::_type_prop_key key_from,
                                                         const atom_type::_type_prop_key key_to, const T dist2,
                                                         const T df_from, const T df_to) {
@@ -82,10 +82,10 @@ __device__ HIP_POT_INLINE T hip_pot::hipToForceAdaptive(const atom_type::_type_p
   }
 }
 
-__device__ HIP_POT_INLINE double hip_pot::hipChargeDensity(const atom_type::_type_prop_key _atom_key,
-                                                           const double dist2) {
+__device__ HIP_POT_INLINE double hip_pot::hipChargeDensity(const atom_type::_type_prop_key _atom_key_me,
+                                                           const atom_type::_type_prop_key _atom_key_nei, const double dist2) {
   const double r = sqrt(dist2);
-  const _device_spline_data s = deviceRhoSpline(_atom_key, r);
+  const _device_spline_data s = deviceRhoSpline(_atom_key_me, _atom_key_nei, r);
   return ((s.spline[3] * s.p + s.spline[4]) * s.p + s.spline[5]) * s.p + s.spline[6];
 }
 

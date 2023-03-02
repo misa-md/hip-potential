@@ -8,7 +8,7 @@
 #include "hip_pot_device_global_vars.h"
 #include "hip_pot_macros.h"
 #include "pot_building_config.h"
-
+#include "hip_pot.h"
 // namespace hip_pot {
 
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_spline_colle pot_tables = nullptr;
@@ -23,6 +23,7 @@ __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_tables_
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_ele_charge_table_metadata = nullptr;
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_embedded_energy_table_metadata = nullptr;
 __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_pair_table_metadata = nullptr;
+__device__ __DEVICE_CONSTANT__ int pot_type = -1;
 // } // namespace hip_pot
 
 #ifdef HIP_POT_COMPACT_MEM_LAYOUT
@@ -40,7 +41,11 @@ void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
   const size_t meta_ptr_size = sizeof(hip_pot::_type_device_pot_table_meta *);
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables_metadata), &(dev_meta_ptr), meta_ptr_size));
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_ele_charge_table_metadata), &(dev_meta_ptr), meta_ptr_size));
-  dev_meta_ptr += n_eam_elements;
+  if (eam_style == EAM_STYLE_ALLOY) {
+    dev_meta_ptr += n_eam_elements;
+  } else if (eam_style == EAM_STYLE_FS) {
+    dev_meta_ptr += n_eam_elements * n_eam_elements;
+  }
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_embedded_energy_table_metadata), &(dev_meta_ptr), meta_ptr_size));
   dev_meta_ptr += n_eam_elements;
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_pair_table_metadata), &(dev_meta_ptr), meta_ptr_size));
@@ -51,7 +56,11 @@ void set_device_variables(const hip_pot::_type_device_table_size n_eam_elements,
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_tables), POT_SYMBOL_COPY_SRC(dev_spline_ptr), spline_ptr_size));
   HIP_CHECK(hipMemcpyToSymbol(HIP_SYMBOL(pot_table_ele_charge_density), POT_SYMBOL_COPY_SRC(dev_spline_ptr),
                               spline_ptr_size));
-  dev_spline_ptr += n_eam_elements;
+  if (eam_style == EAM_STYLE_ALLOY) {
+      dev_spline_ptr += n_eam_elements;
+  } else if (eam_style == EAM_STYLE_FS) {
+    dev_spline_ptr += n_eam_elements * n_eam_elements;
+  }
   HIP_CHECK(
       hipMemcpyToSymbol(HIP_SYMBOL(pot_table_embedded_energy), POT_SYMBOL_COPY_SRC(dev_spline_ptr), spline_ptr_size));
   dev_spline_ptr += n_eam_elements;

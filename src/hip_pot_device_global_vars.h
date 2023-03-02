@@ -24,7 +24,7 @@
 
   // number of elements in potential
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_table_size pot_eam_eles;
-
+  extern __device__ __DEVICE_CONSTANT__ int pot_type;
   // metadata of each potential table.
   extern __device__ __DEVICE_CONSTANT__ hip_pot::_type_device_pot_table_meta *pot_tables_metadata;
   // origin data of electron charge density tables for multiple atomic elements on device.

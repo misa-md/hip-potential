@@ -7,7 +7,7 @@
 
 #include "hip_pot_types.h"
 #include <eam.h>
-
+extern int eam_style;
 namespace hip_pot {
   typedef struct {
     // device array of all metadata of all elements type and table type.

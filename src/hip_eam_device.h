@@ -57,11 +57,12 @@ namespace hip_pot {
   /**
    * compute the contribution to electron charge density from atom j of type {@var _atom_key} at location of one
    * atom i. whose distance is specified by {@var dist2}
-   * @param _atom_key atom type of atom j.
+   * @param _atom_me atom type of atom i.
+   * @param _atom_nei atom type of atom j.
    * @param dist2 the square of the distance between atom i and atom j.
    * @return the contribution to electron charge density from atom j.
    */
-  __device__ HIP_POT_INLINE double hipChargeDensity(const atom_type::_type_prop_key _atom_key, const double dist2);
+  __device__ HIP_POT_INLINE double hipChargeDensity(const atom_type::_type_prop_key _atom_me, const atom_type::_type_prop_key _atom_nei, const double dist2);
 
   /**
    * compute derivative of embedded energy of atom of type {@var _atom_type},

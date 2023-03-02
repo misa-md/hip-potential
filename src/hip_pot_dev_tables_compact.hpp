@@ -17,8 +17,8 @@
 #ifndef HIP_POT_COMPACT_MEM_LAYOUT
 
 __device__ __forceinline__ hip_pot::_type_device_pot_spline *
-pot_table_ele_charge_density_by_key(const int ele_count, const atom_type::_type_prop_key key) {
-  return pot_table_ele_charge_density[key];
+pot_table_ele_charge_density_by_key(const int ele_count, const hip_pot::_type_device_table_size index) {
+  return pot_table_ele_charge_density[index];
 }
 
 __device__ __forceinline__ hip_pot::_type_device_pot_spline *
