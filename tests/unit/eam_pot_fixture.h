@@ -22,7 +22,7 @@ public:
     int own_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &own_rank);
 
-    _pot = eam::newInstance(ELE_SIZE, root_rank, own_rank, MPI_COMM_WORLD);
+    _pot = eam::newInstance(EAM_STYLE_ALLOY, ELE_SIZE, root_rank, own_rank, MPI_COMM_WORLD);
     prop_key_list = new atom_type::_type_prop_key[ELE_SIZE];
 
     std::mt19937 rng(27321);
@@ -36,11 +36,12 @@ public:
       data_buff_elec[k] = k * dist_f(rng);
     }
 
+    auto eam_pot_loader = dynamic_cast<EamAlloyLoader *>(_pot->eam_pot_loader);
     for (int i = 0; i < ELE_SIZE; i++) {
       int key = i; // key is atom number
       prop_key_list[i] = key;
-      _pot->embedded.append(key, DATA_SIZE, 0.0, 0.001, data_buff_emb);
-      _pot->electron_density.append(key, DATA_SIZE, 0.0, 0.001, data_buff_elec);
+      eam_pot_loader->embedded.append(key, DATA_SIZE, 0.0, 0.001, data_buff_emb);
+      eam_pot_loader->electron_density.append(key, DATA_SIZE, 0.0, 0.001, data_buff_elec);
     }
 
     int i, j;
@@ -50,7 +51,7 @@ public:
         data_buff[k] = k * dist_f(rng);
       }
       for (j = 0; j <= i; j++) {
-        _pot->eam_phi.append(prop_key_list[i], prop_key_list[j], DATA_SIZE, 0.0, 0.001, data_buff);
+        eam_pot_loader->eam_phi.append(prop_key_list[i], prop_key_list[j], DATA_SIZE, 0.0, 0.001, data_buff);
       }
     }
 
