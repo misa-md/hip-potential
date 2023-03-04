@@ -26,10 +26,17 @@ __device__ __forceinline__ _device_spline_data findSpline(const hip_pot::_type_d
 }
 
 // find electron density spline
-__device__ __forceinline__ _device_spline_data deviceRhoSpline(const atom_type::_type_prop_key key,
+__device__ __forceinline__ _device_spline_data deviceRhoSpline(const atom_type::_type_prop_key key_me,
+                                                               const atom_type::_type_prop_key key_nei,
                                                                hip_pot::_type_device_pot_table_item v) {
-  const hip_pot::_type_device_pot_table_meta meta = pot_ele_charge_table_metadata[key];
-  const hip_pot::_type_device_pot_spline *spline = pot_table_ele_charge_density_by_key(meta.n, key);
+  hip_pot::_type_device_table_size index;
+  if (pot_type == EAM_STYLE_ALLOY) {
+    index = key_nei;
+  } else if (pot_type == EAM_STYLE_FS) {
+    index = pot_eam_eles * key_nei + key_me;
+  }
+  const hip_pot::_type_device_pot_table_meta meta = pot_ele_charge_table_metadata[index]; // todo
+  const hip_pot::_type_device_pot_spline *spline = pot_table_ele_charge_density_by_key(meta.n, index);
   return findSpline(v, spline, meta);
 }
 
@@ -44,19 +51,18 @@ __device__ __forceinline__ _device_spline_data deviceEmbedSpline(const atom_type
 // find pair potential spline.
 __device__ __forceinline__ _device_spline_data devicePhiSplineByType(atom_type::_type_prop_key key_from,
                                                                      atom_type::_type_prop_key key_to,
-                                                                     hip_pot::_type_device_pot_table_item v) {
-  if (key_from > key_to) {
-    // swap from and to.
-    atom_type::_type_prop_key temp = key_from;
-    key_from = key_to;
-    key_to = temp;
-  }
+                                                                      hip_pot::_type_device_pot_table_item v) {
   // for example:
   // FeFe  FeCu  FeNi  CuCu  CuNi  NiNi
   // (0,0) (0,1) (0,2) (1,1) (1,2) (2,2)
   //   0,    1,   2,    3,    4,    5
   // for (i,j) pair, we have: index = [N + (N-1) + (N-i+1)] + (j-i+1) - 1 = Ni-(i+1)*i/2+j
-  const hip_pot::_type_device_table_size index = pot_eam_eles * key_from - (key_from + 1) * key_from / 2 + key_to;
+//   const hip_pot::_type_device_table_size index = pot_eam_eles * key_from - (key_from + 1) * key_from / 2 + key_to;
+  hip_pot::_type_device_table_size index;
+  index = key_from * (key_from + 1) / 2 + key_to;
+  if (key_from < key_to) {
+    index = key_to * (key_to + 1) / 2 + key_from;
+  }
   const hip_pot::_type_device_pot_table_meta meta = pot_pair_table_metadata[index];
   const hip_pot::_type_device_pot_spline *spline = pot_table_pair_by_key(meta.n, index);
   return findSpline(v, spline, meta);
